@@ -1,5 +1,5 @@
 ---
-abstract: 'Perl extension for music tension analysis'
+abstract: 'music tension analysis'
 author:
   - 'Jeremy Mates <jmates@cpan.org>'
 build_requires:
@@ -19,7 +19,10 @@ no_index:
     - inc
 requires:
   Carp: 0
-  List::Util: 0
   Scalar::Util: 0
   Test::More: 0
-version: 0.01
+resources:
+  homepage: https://github.com/thrig/Music-Tension
+  license: http://dev.perl.org/licenses/
+  repository: https://github.com/thrig/Music-Tension
+version: 0.50
