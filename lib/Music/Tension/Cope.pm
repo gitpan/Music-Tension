@@ -9,10 +9,11 @@ use strict;
 use warnings;
 
 use Carp qw/croak/;
+use Music::Tension ();
 use Scalar::Util qw/looks_like_number/;
 
-our @ISA     = qw(Music::Tension);    # but doesn't do anything right now
-our $VERSION = '0.50';
+our @ISA     = qw(Music::Tension);
+our $VERSION = '0.60';
 
 my $DEG_IN_SCALE = 12;
 
@@ -22,7 +23,7 @@ my $DEG_IN_SCALE = 12;
 
 sub new {
   my ( $class, %param ) = @_;
-  my $self = {};
+  my $self = $class->SUPER::new(%param);
 
   if ( exists $param{duration_weight} ) {
     croak "duration_weight must be a number"
@@ -86,7 +87,7 @@ sub approach {
   croak "pitch is required" if !defined $p1;
   croak "pitch must be integer" if $p1 !~ m/^-?\d+$/;
 
-  $self->pitches( 0, $p1 % $DEG_IN_SCALE );
+  $self->pitches( 0, abs($p1) % $DEG_IN_SCALE );
 }
 
 # Tension over durations
@@ -112,6 +113,19 @@ sub duration {
     $self->{_duration_weight} * $tension;
 }
 
+# KLUGE things into whatever is closest equal temperament for now
+sub frequencies {
+  my ( $self, $f1, $f2 ) = @_;
+  croak "two frequencies required" if !defined $f1 or !defined $f2;
+  croak "frequencies must be positive numbers"
+    if !looks_like_number $f1
+      or !looks_like_number $f2
+      or $f1 < 0
+      or $f2 < 0;
+
+  $self->pitches( map $self->freq2pitch($_), $f1, $f2 );
+}
+
 # Tension based on where note is within measure p.232 [Cope 2005]
 sub metric {
   my ( $self, $b, $v ) = @_;
@@ -122,6 +136,24 @@ sub metric {
       or $v <= 0;
 
   return ( $b * $self->{_metric_weight} ) / $v;
+}
+
+# Tension for two pitches
+sub pitches {
+  my ( $self, $p1, $p2 ) = @_;
+  croak "two pitches required" if !defined $p1 or !defined $p2;
+  croak "pitches must be integers"
+    if $p1 !~ m/^-?\d+$/
+      or $p2 !~ m/^-?\d+$/;
+
+  my $interval = abs( $p2 - $p1 );
+  my $octave   = int( $interval / $DEG_IN_SCALE );
+  my $tension =
+    $self->{_tensions}->{ $interval % $DEG_IN_SCALE } +
+    ( $octave > 0 ? $self->{_octave_adjust} : 0 );
+  $tension = 0 if $tension < 0;
+
+  return $tension;
 }
 
 # Tension from first note to all others above it in a passed pitch set.
@@ -155,24 +187,6 @@ sub vertical {
   return wantarray ? ( $sum, $min, $max, \@tensions ) : $sum;
 }
 
-# Tension for two pitches
-sub pitches {
-  my ( $self, $p1, $p2 ) = @_;
-  croak "two pitches required" if !defined $p1 or !defined $p2;
-  croak "pitches must be integers"
-    if $p1 !~ m/^-?\d+$/
-      or $p2 !~ m/^-?\d+$/;
-
-  my $interval = abs( $p2 - $p1 );
-  my $octave   = int( $interval / $DEG_IN_SCALE );
-  my $tension =
-    $self->{_tensions}->{ $interval % $DEG_IN_SCALE } +
-    ( $octave > 0 ? $self->{_octave_adjust} : 0 );
-  $tension = 0 if $tension < 0;
-
-  return $tension;
-}
-
 1;
 __END__
 
@@ -184,8 +198,8 @@ Music::Tension::Cope - tension analysis for equal temperament music
 
 Beta interface! Has and will change without notice!
 
-  use Music::Tension;
-  my $tension = Music::Tension->new;
+  use Music::Tension::Cope;
+  my $tension = Music::Tension::Cope->new;
 
   my $value = $tension->pitches(4, 17);
 
@@ -200,9 +214,6 @@ Beta interface! Has and will change without notice!
   $tension->approach(7);   # motion by perfect fifth from prev.
 
 =head1 DESCRIPTION
-
-Parsing music into a form suitable for use by this module and practical
-uses of the results are left as an exercise to the reader.
 
 This module offers tension analysis of equal temperament 12-pitch music,
 using the method outlined by David Cope in the text "Computer Models of
@@ -229,9 +240,24 @@ to update all old tension values before starting any new analysis or
 composition. This may require storing the original intervals or pitch
 sets along with the tension numbers.
 
+Parsing music into a form suitable for use by this module and practical
+uses of the results are left as an exercise to the reader.
+
+=head1 CAVEATS
+
+See http://www.pnas.org/content/early/2012/11/07/1207989109 (doi:
+10.1073/pnas.1207989109) - "The basis of musical consonance as revealed
+by congenital amusia" for more thoughts on consonance. This article in
+particular shows a control group (presumably Western) rating an
+augmented triad as less pleasant than a diminished triad, while the
+numbers in this module will rate an augmented triad as only slightly
+more tense than the major and minor triads, and well less tense than a
+diminished triad (due to the tritone present in that).
+
 =head1 METHODS
 
-Any method may B<croak> if something is awry with the input.
+Any method may B<croak> if something is awry with the input. Methods are
+inherited from the parent class, L<Music::Tension>.
 
 =over 4
 
@@ -275,16 +301,24 @@ Cope; see the references below for the gory details.
 =item B<approach> I<pitch1>
 
 Presently a thin wrapper around B<pitches>, where I<pitch1> is relative
-to unison (0), and will be mapped to the same register. Used for
-horizontal tensions. Cope indicates this is for "root motions" which
-from the example provided appears to be the harmonic changes, not
-specific interval leaps, so tension of unison for a tonic extension,
-tension of fifth for I-V6-I stasis or trips up or down the circle of
-fifths, and so forth:
+to unison (0), and will be mapped to that register, regardless of sign
+or direction of the music. Used for horizontal tensions. Cope indicates
+this is for "root motions" which from the example provided appears to be
+the harmonic changes, not specific interval leaps, so tension of unison
+for a tonic extension, tension of fifth for I-V6-I stasis or trips up or
+down the circle of fifths, and so forth:
 
   $tension->approach( 0 );    # stasis (tonic -> tonic)
   $tension->approach( 5 );    # perfect fourth (tonic -> pre-dominant)
   $tension->approach( 7 );    # fifth (tonic -> dominant)
+
+Something else may be necessary to account for other root motions;
+Schoenberg (in "Theory of Harmony") favors rising fourths and falling
+thirds over the weaker falling fourth and rising thirds, and points out
+the weaker motions can be rectified over a longer phrase. Also relevant
+is whether the music is melodically rising or falling, and harmonically
+rising or falling (these can go in parallel or opposite directions,
+depending).
 
 =item B<duration> I<pitch_set_or_tension>, I<duration>
 
@@ -303,6 +337,15 @@ significant alterations to that over the course of a work.
 The duration tension may also need adjustment depending on how well the
 instrument involved sustains; consider a xylophone vs. a piano vs. a
 piano with the sustain pedal down vs. a church organ.
+
+=item B<frequencies> I<f1>, I<f2>
+
+Calculates tension between two given frequencies (Hz), via crude
+conversion of the frequencies to whatever-are-the-closest MIDI pitch
+numbers, and then calling B<pitches> on those pitches. Mostly for
+interface compatibility with L<Music::Tension::PlompLevelt>; presumably
+could be replaced with mathematical expression Cope uses to avoid the
+kluge-to-MIDI-pitch-numbers?
 
 =item B<metric> I<beat_number>, I<beat_value>
 
@@ -362,7 +405,8 @@ formed between those two pitches.
 
 =item *
 
-L<App::MusicTools>
+L<App::MusicTools> - command line music composition and analysis tools
+that make use of this module.
 
 =item *
 
@@ -370,11 +414,20 @@ L<App::MusicTools>
 
 =item *
 
-"The Craft of Musical Composition", Paul Hindemith, 1942. (4th edition)
+"The Craft of Musical Composition", Paul Hindemith, 1942.
 
 =item *
 
-L<Music::Chord::Note>
+"Theory of Harmony", Arnold Schoenberg, 1983.
+
+=item *
+
+L<Music::Chord::Note> - obtain pitch sets for common chord names.
+
+=item *
+
+L<Music::Tension::PlompLevelt> - alternative tension algorithm based on
+work of William Sethares.
 
 =back
 

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 21;
+use Test::More tests => 23;
 BEGIN { use_ok('Music::Tension::Cope') }
 
 my $mt = Music::Tension::Cope->new;
@@ -25,6 +25,9 @@ is( $mt->pitches( 0, 25 ), 0.98, 'minor 2nd +8va*2 tension' );
 # approach mostly just calls ->pitches(0, x)
 is( $mt->approach(0), 0,   'unison approach tension' );
 is( $mt->approach(7), 0.1, 'fifth approach tension' );
+
+# frequencies just maps to equal temperament then calls pitches
+is( $mt->frequencies( 261.6, 440 ), 0.25, 'major 6th via frequencies' );
 
 # vertical depends on ->pitches working
 is_deeply(
@@ -57,10 +60,11 @@ is( scalar $mt->duration( [qw/0 4 7/], 0.25 ),
 # new() params
 
 my $mtc = Music::Tension::Cope->new(
-  duration_weight => 0.5,
-  metric_weight   => 0.5,
-  octave_adjust   => 0.2,
-  tensions        => {
+  duration_weight     => 0.5,
+  metric_weight       => 0.5,
+  octave_adjust       => 0.2,
+  reference_frequency => 640,
+  tensions            => {
     0  => 0.33,
     1  => 0.5,
     2  => 0,
@@ -81,3 +85,6 @@ is( $mtc->pitches( 0, 13 ), 0.7,  'minor 2nd +8va tension test (custom)' );
 is( $mtc->duration( 0.3, 0.25 ),
   0.275, 'major triad qn duration custom weight' );
 is( $mtc->metric( 1, 2 ), 0.25, 'metric 4/4 beat 1 custom weight' );
+
+# inherited from parent class
+is( $mtc->pitch2freq(69), 640, 'pitch 69 to frequency, ref pitch 640' );
