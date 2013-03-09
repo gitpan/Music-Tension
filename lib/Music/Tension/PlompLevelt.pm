@@ -1,3 +1,5 @@
+# -*- Perl -*-
+#
 # "Plomp-Levelt consonance curve" implementation
 #
 # Beta interface! May change without notice!
@@ -14,7 +16,7 @@ use Music::Tension ();
 use Scalar::Util qw/looks_like_number/;
 
 our @ISA     = qw(Music::Tension);
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 # pianowire* are from [Helmholtz 1877 p.79] relative intensity of first
 # six harmonics of piano wire, struck at 1/7th its length, for various
@@ -140,8 +142,8 @@ sub pitches {
 
 sub vertical {
   my ( $self, $pset ) = @_;
-  croak "pitch set must be array ref\n" unless ref $pset eq 'ARRAY';
-  croak "pitch set must contain multiple elements\n" if @$pset < 2;
+  croak "pitch set must be array ref" unless ref $pset eq 'ARRAY';
+  croak "pitch set must contain multiple elements" if @$pset < 2;
 
   my @freqs = map $self->pitch2freq($_), @$pset;
 
@@ -184,7 +186,7 @@ Beta interface! Will likely change without notice!
 =head1 DESCRIPTION
 
 Plomp-Levelt consonance curve calculations based on work by William
-Sethares and others (L<"SEE ALSO"> for links). None of this will make
+Sethares and others (L</"SEE ALSO"> for links). None of this will make
 sense without some grounding in music theory and the referenced papers.
 
 Parsing music into a form suitable for use by this module and practical
@@ -359,21 +361,27 @@ turn with each subsequent in the set. Returns tension as a number.
 
 =item *
 
-http://jjensen.org/DissonanceCurve.html - Java applet, discussion.
+L<http://jjensen.org/DissonanceCurve.html> - Java applet, discussion.
 
 =item *
 
-http://sethares.engr.wisc.edu/consemi.html - "Relating Tuning and Timbre"
-by William Sethares. Also http://sethares.engr.wisc.edu/comprog.html
+L<http://sethares.engr.wisc.edu/consemi.html> - "Relating Tuning and
+Timbre" by William Sethares. Also
+L<http://sethares.engr.wisc.edu/comprog.html>
 
 =item *
 
 "Music: A Mathematical Offering", David Benson, 2008. (Chapter 4)
-http://homepages.abdn.ac.uk/mth192/pages/html/maths-music.html
+L<http://homepages.abdn.ac.uk/mth192/pages/html/maths-music.html>
 
 =item *
 
 L<Music::Chord::Note> - obtain pitch sets for common chord names.
+
+=item *
+
+L<Music::Scala> - Scala scale file support for alternate tuning and
+temperament calculations.
 
 =item *
 
@@ -393,7 +401,7 @@ Jeremy Mates, E<lt>jmates@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2012 by Jeremy Mates
+Copyright (C) 2012-2013 by Jeremy Mates
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.16 or,

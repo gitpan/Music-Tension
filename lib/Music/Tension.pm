@@ -1,3 +1,5 @@
+# -*- Perl -*-
+#
 # Parent class for music tension analysis modules.
 
 package Music::Tension;
@@ -9,7 +11,7 @@ use warnings;
 use Carp qw/croak/;
 use Scalar::Util qw/looks_like_number/;
 
-our $VERSION = '0.61';
+our $VERSION = '0.64';
 
 ########################################################################
 #
@@ -19,6 +21,7 @@ sub new {
   my ( $class, %param ) = @_;
   my $self = {};
 
+  # just MIDI support here, see Music::Scala for scala scale file support
   if ( exists $param{reference_frequency} ) {
     croak "reference_frequency must be a number"
       if !looks_like_number $param{reference_frequency};
@@ -35,7 +38,7 @@ sub freq2pitch {
   my ( $self, $freq ) = @_;
   croak "frequency must be a positive number"
     if !looks_like_number $freq
-      or $freq < 0;
+    or $freq < 0;
 
   return sprintf "%.0f",
     69 + 12 * ( log( $freq / $self->{_reference_frequency} ) / log(2) );
@@ -45,7 +48,7 @@ sub pitch2freq {
   my ( $self, $pitch ) = @_;
   croak "pitch must be MIDI number"
     if !looks_like_number $pitch
-      or $pitch < 0;
+    or $pitch < 0;
 
   return $self->{_reference_frequency} * ( 2**( ( $pitch - 69 ) / 12 ) );
 }
@@ -142,7 +145,11 @@ range), returns the frequency (Hz).
 
 =item *
 
-http://en.wikipedia.org/wiki/Pitch_%28music%29 was the source of the
+L<Music::Scala> for the use of alternate tuning and temperaments.
+
+=item *
+
+L<http://en.wikipedia.org/wiki/Pitch_%28music%29> was the source of the
 pitch/frequency conversion equations.
 
 =back
@@ -153,7 +160,7 @@ Jeremy Mates, E<lt>jmates@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2012 by Jeremy Mates
+Copyright (C) 2012-2013 by Jeremy Mates
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.16 or,

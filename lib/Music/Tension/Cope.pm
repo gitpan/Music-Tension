@@ -1,3 +1,5 @@
+# -*- Perl -*-
+#
 # "Copian" tension analysis for 12-pitch material in equal temperament.
 #
 # Beta interface! May change without notice!
@@ -161,8 +163,8 @@ sub pitches {
 # is desired by context.
 sub vertical {
   my ( $self, $pset ) = @_;
-  croak "pitch set must be array ref\n" unless ref $pset eq 'ARRAY';
-  croak "pitch set must contain multiple elements\n" if @$pset < 2;
+  croak "pitch set must be array ref" unless ref $pset eq 'ARRAY';
+  croak "pitch set must contain multiple elements" if @$pset < 2;
   my @pcs = @$pset;
 
   # Reposition pitches upwards if subsequent lower than the initial pitch
@@ -245,7 +247,7 @@ uses of the results are left as an exercise to the reader.
 
 =head1 CAVEATS
 
-See http://www.pnas.org/content/early/2012/11/07/1207989109 (doi:
+See L<http://www.pnas.org/content/early/2012/11/07/1207989109> (doi:
 10.1073/pnas.1207989109) - "The basis of musical consonance as revealed
 by congenital amusia" for more thoughts on consonance. This article in
 particular shows a control group (presumably Western) rating an
