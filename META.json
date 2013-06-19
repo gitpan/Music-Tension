@@ -35,7 +35,8 @@
             "Carp" : "0",
             "List::Util" : "0",
             "Scalar::Util" : "0",
-            "Test::More" : "0"
+            "Test::More" : "0",
+            "perl" : "5.01"
          }
       }
    },
@@ -49,5 +50,5 @@
          "url" : "https://github.com/thrig/Music-Tension"
       }
    },
-   "version" : "0.64"
+   "version" : "0.65"
 }
