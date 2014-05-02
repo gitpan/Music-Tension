@@ -15,7 +15,7 @@ use Music::Tension ();
 use Scalar::Util qw/looks_like_number/;
 
 our @ISA     = qw(Music::Tension);
-our $VERSION = '0.66';
+our $VERSION = '0.68';
 
 my $DEG_IN_SCALE = 12;
 

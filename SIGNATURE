@@ -1,0 +1,45 @@
+This file contains message digests of all files listed in MANIFEST,
+signed via the Module::Signature module, version 0.73.
+
+To verify the content in this distribution, first make sure you have
+Module::Signature installed, then type:
+
+    % cpansign -v
+
+It will check each file's integrity, as well as the signature's
+validity.  If "==> Signature verified OK! <==" is not displayed,
+the distribution may already have been compromised, and you should
+not run its Makefile.PL or Build.PL.
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+SHA1 5af545c218bf29dd2f3c9202e292c2116254d035 Changes
+SHA1 846252ea9428ead5a9f387bcd843958f5759609c LICENSE
+SHA1 9fa41361bb6b70fe1cb43e0dfdd6252199bf64b4 MANIFEST
+SHA1 5e023a7e6de66c272456d6a8714ac56b14d3e17b META.json
+SHA1 881aa5bc280d9ba78365dcf305f700d06de9f4df META.yml
+SHA1 e2f7c23ec6fc9d383d38e286909e5f6b2562c257 Makefile.PL
+SHA1 be05e96ea556b007859f07431bdf4f4ec2076af8 README
+SHA1 7cad32b004757a806b7fab9a1fbc525e88c6196c eg/calc-forte-tensions
+SHA1 4c0c357c7420b50df500376ee0973c40e018b219 eg/compare-tensions
+SHA1 baa078d046c4ea11690287d92e45b36c6c56c789 eg/fit-tensions
+SHA1 56ff6b5464f3e437bad051009dd9416075eaac31 eg/gen-pl-nums
+SHA1 c3bc9db6c5eea1f7cf449b354055e2d6c9ba1cf3 lib/Music/Tension.pm
+SHA1 6009d3ed6453b950351c384be177cbef0562e4f9 lib/Music/Tension/Cope.pm
+SHA1 4b90af7531f62b40e43f551a07e39476e1d171f7 lib/Music/Tension/PlompLevelt.pm
+SHA1 da8afb5b91cab5e92cd8ab59fcf11c585c8cc739 t/Music-Tension-Cope.t
+SHA1 7babcf12cf1b098ba77ec13aa590ea19176e82db t/Music-Tension-PlompLevelt.t
+SHA1 a7254a415e95c7a3ae82d0eca89a5d8a1a011e07 t/Music-Tension.t
+SHA1 3ef65383d82f059f56f43236663119c01974decb t/pod.t
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQEcBAEBAgAGBQJTYxFqAAoJEDTEVWqwTuCUEkgH/i9s/O+4MxQPKBW9yKTv/bno
+H7Ygy0Kr9G4at59bmynn67yT9nkID9YjYaFPKnOCNCdjatHbXblhhdRthqjNXct7
+hAeZ1Sayh0wMaANzLBNTGD926sFzESxspOt3UU5o7J0DLPHG1W6mdnPQJblCIV4c
+Dwg1m1W0zbGyqCof4uGc/pKo1hF0PlM/dDJo40Us84vleieYIds7nzdvp+XMK47G
+rg/LYxaV6mzDXZbQ7lCu8S6KnUIuPTYSkQ4rc8e4IwokbLKGcYpbrdVceEKc1ZX0
+U6NU+Nuw/nMSv+9hqBJU10gCDC0tdYuR0GMqmMmwrsIqhqHoEK5zFQTD6LrXgik=
+=832s
+-----END PGP SIGNATURE-----
